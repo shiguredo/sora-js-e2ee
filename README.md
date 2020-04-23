@@ -1,11 +1,16 @@
-# WebRTC SFU Sora E2EE
+# Sora JS E2EE ライブラリ
 
 **現在絶賛開発中です**
+
+## 概要
+
+WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
+これ単体では利用できず Sora JS SDK と合わせて利用します。
 
 ## Q and A
 
 - E2EE 用の鍵はどうやって生成すればいいですか？
-    - E2EE 用の鍵についてはこのライブラリでは判断していません
+    - E2EE 用の鍵についてはこのライブラリではただの文字列としてしか扱いません
 - E2EE に利用する暗号方式はなんですか？
     - AES-GCM 128 です
     - AES-GCM 256 は鍵の更新が早くなるため採用を見送りました
@@ -21,15 +26,71 @@
 - E2EE で利用する暗号鍵の利用回数が 2^32-1 回を超えたらどうなりますか？
     - 鍵の更新は行わず切断します
     - 将来的には鍵の更新に対応したいと考えています
+- E2EE はどうやって実現していますか？
+    - Insertable Streams を利用して実現しています
+- E2EE を利用すると遅くなりますか？
+    - 暗号化/復号が入るので遅くはなりますが WebWorker を利用することで可能な範囲で高速化はしています
 
 ## 利用可能環境
 
+**Insertable Streams API が Chrome M83-85 で Field Trial 中**
+
 - Chrome M83 以降
+
+## 利用技術
+
+- Insertable Streams
+- WebCrypto
+- WebWorker
 
 ## 利用方法
 
-- Sora JavaScript SDK と sora-e2ee.js を利用します
+**Sora Labo での利用例**
 
+```javascript
+let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
+let channelId = 'shiguredo@sora-labo';
+let metadata = {'signaling_key': 'VBmHJ75tjP_NPpHPDwDHfuf84LtNtOx0-ElOZ0qlU7xQ0QtV'};
+let publisher = sora.sendrecv(channelId, metadata, {e2ee: 'e2ee-secret-key'});
+
+navigator.mediaDevices.getUserMedia({audio: true, video: true})
+  .then(mediaStream => {
+    // connect
+    publisher.connect(mediaStream)
+      .then(stream => {
+        // stream を video.src に追加する等の処理
+      });
+  })
+  .catch(e => {
+    console.error(e);
+  });
+
+// disconnect
+publisher.disconnect()
+  .then(() => {
+    // video を止める等の処理
+  });
+
+// event
+publisher.on('disconnect', function(e) {
+  console.error(e);
+});
 ```
 
+## ライセンス
+
+```
+Copyright 2020, Shiguredo Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
