@@ -40,8 +40,11 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 ## 利用技術
 
 - Insertable Streams
+    - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
 - WebCrypto
+    - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - WebWorker
+    - [Web Workers](https://w3c.github.io/workers/)
 
 ## 利用方法
 
