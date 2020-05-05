@@ -1,19 +1,26 @@
 # Sora JS E2EE ライブラリ
 
-**現在絶賛開発中です**
+**現在リリース準備中です**
+
+## 現在実験的に Sora Labo でサンプルが利用可能です
+
+Sora Labo のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
+
+`Sora Labo <https://sora-labo.shiguredo.jp/>`_
 
 ## 概要
 
 WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
 これ単体では利用できず Sora JS SDK と合わせて利用します。
 
-## Q and A
+## Q&A
 
+- E2EE を利用するメリットはなんですか？
+    - WebRTC SFU 側に音声や映像を見られることがなくなります
 - E2EE 用の鍵はどうやって生成すればいいですか？
     - E2EE 用の鍵についてはこのライブラリではただの文字列としてしか扱いません
-- E2EE に利用する暗号方式はなんですか？
-    - AES-GCM 128 です
-    - AES-GCM 256 は鍵の更新が早くなるため採用を見送りました
+- E2EE に利用する暗号方式は何を利用していますか？
+    - AES-GCM 128 を利用しています
 - E2EE に利用する暗号鍵を生成する鍵導出関数はなんですか？
     - PBKDF2 を利用します
 - E2EE に利用する IV の生成方法はなんですか？
@@ -30,6 +37,9 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - Insertable Streams を利用して実現しています
 - E2EE を利用すると遅くなりますか？
     - 暗号化/復号が入るので遅くはなりますが WebWorker を利用することで可能な範囲で高速化はしています
+- 暗号ライブラリは何を利用していますか？
+    - WebCrypto を利用しています
+
 
 ## 利用可能環境
 
@@ -40,8 +50,11 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 ## 利用技術
 
 - Insertable Streams
+    - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
 - WebCrypto
+    - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - WebWorker
+    - [Web Workers](https://w3c.github.io/workers/)
 
 ## 利用方法
 
@@ -51,12 +64,12 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
 let channelId = 'shiguredo@sora-labo';
 let metadata = {'signaling_key': 'VBmHJ75tjP_NPpHPDwDHfuf84LtNtOx0-ElOZ0qlU7xQ0QtV'};
-let publisher = sora.sendrecv(channelId, metadata, {e2ee: 'e2ee-secret-key'});
+let sendrecv = sora.sendrecv(channelId, metadata, {e2ee: 'e2ee-secret-key'});
 
 navigator.mediaDevices.getUserMedia({audio: true, video: true})
   .then(mediaStream => {
     // connect
-    publisher.connect(mediaStream)
+    sendrecv.connect(mediaStream)
       .then(stream => {
         // stream を video.src に追加する等の処理
       });
@@ -66,13 +79,13 @@ navigator.mediaDevices.getUserMedia({audio: true, video: true})
   });
 
 // disconnect
-publisher.disconnect()
+sendrecv.disconnect()
   .then(() => {
     // video を止める等の処理
   });
 
 // event
-publisher.on('disconnect', function(e) {
+sendrecv.on('disconnect', function(e) {
   console.error(e);
 });
 ```
