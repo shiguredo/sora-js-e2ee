@@ -64,12 +64,12 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
 let channelId = 'shiguredo@sora-labo';
 let metadata = {'signaling_key': 'VBmHJ75tjP_NPpHPDwDHfuf84LtNtOx0-ElOZ0qlU7xQ0QtV'};
-let publisher = sora.sendrecv(channelId, metadata, {e2ee: 'e2ee-secret-key'});
+let sendrecv = sora.sendrecv(channelId, metadata, {e2ee: 'e2ee-secret-key'});
 
 navigator.mediaDevices.getUserMedia({audio: true, video: true})
   .then(mediaStream => {
     // connect
-    publisher.connect(mediaStream)
+    sendrecv.connect(mediaStream)
       .then(stream => {
         // stream を video.src に追加する等の処理
       });
@@ -79,13 +79,13 @@ navigator.mediaDevices.getUserMedia({audio: true, video: true})
   });
 
 // disconnect
-publisher.disconnect()
+sendrecv.disconnect()
   .then(() => {
     // video を止める等の処理
   });
 
 // event
-publisher.on('disconnect', function(e) {
+sendrecv.on('disconnect', function(e) {
   console.error(e);
 });
 ```
