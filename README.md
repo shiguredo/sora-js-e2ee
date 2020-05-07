@@ -6,7 +6,7 @@
 
 Sora Labo のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
 
-`Sora Labo <https://sora-labo.shiguredo.jp/>`_
+[Sora Labo](https://sora-labo.shiguredo.jp/)
 
 ## 概要
 
