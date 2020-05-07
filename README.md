@@ -4,9 +4,7 @@
 
 ## 現在実験的に Sora Labo でサンプルが利用可能です
 
-Sora Labo のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
-
-[Sora Labo](https://sora-labo.shiguredo.jp/)
+[Sora Labo](https://sora-labo.shiguredo.jp/) のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
 
 ## 概要
 
