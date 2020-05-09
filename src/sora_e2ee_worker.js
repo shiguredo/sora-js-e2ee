@@ -36,12 +36,14 @@ async function generateDeriveKey(ssrc, ssrcData) {
       {
         name: "PBKDF2",
         salt: ssrcData,
+        // TODO(v): 定数化
         iterations: 10000,
         hash: "SHA-256",
       },
       material,
       {
         name: "AES-GCM",
+        // TODO(v): 定数化
         length: 128,
       },
       false,
@@ -59,11 +61,13 @@ async function generateIV(ssrc, ssrcData, seqNumData) {
       {
         name: "PBKDF2",
         salt: ssrcData,
+        // TODO(v): 定数化
         iterations: 10000,
         hash: { name: "SHA-384" },
       },
       material,
       // IV は 96 ビットなので
+      // TODO(v): 定数化
       96
     );
     writeIV = new Uint8Array(writeIVBuffer);
@@ -86,6 +90,7 @@ async function encryptFunction(encodedFrame, controller) {
 
   const currentSeqNum = getSeqNum(ssrc);
   // seqNum が 32bit 以上の場合は停止する
+  // TODO(v): 定数化
   if (currentSeqNum >= 2 ** 32) {
     postMessage({ operation: "disconnect" });
   }
@@ -168,6 +173,7 @@ async function decryptFunction(encodedFrame, controller) {
 
   // ssrc, seqNum は 32 bit の想定
   const ssrc = ssrcData[0];
+  // TODO(v): 使ってない？
   const seqNum = seqNumData[0];
 
   const currentDeriveKey = await generateDeriveKey(ssrc, ssrcData);
@@ -233,6 +239,7 @@ async function decryptFunction(encodedFrame, controller) {
         const newData = new ArrayBuffer(60);
         const newUint8 = new Uint8Array(newData);
 
+        // TODO(v): 定数化？
         // prettier-ignore
         newUint8.set([0xb0, 0x05, 0x00, 0x9d, 0x01, 0x2a, 0xa0, 0x00, 0x5a, 0x00,
                   0x39, 0x03, 0x00, 0x00, 0x1c, 0x22, 0x16, 0x16, 0x22, 0x66,

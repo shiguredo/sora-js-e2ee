@@ -1,4 +1,4 @@
-// このコードは実装の参考コード
+// このコードはライブラリ実装にむけた参考コードなので最終的には消します
 
 // 対応しているかどうかの判断
 const supportsInsertableStreams = !!RTCRtpSender.prototype
@@ -31,29 +31,11 @@ function onMessage(event) {
 
     peerConnection = new RTCPeerConnection(config, constraints);
 
-    peerConnection.onclose = function (event) {
-      console.log(event);
-    };
-
-    peerConnection.onerror = function (error) {
-      console.log(error);
-    };
-
     peerConnection.ontrack = function (event) {
-      let stream = event.streams[0];
-      if (stream.id === "default") {
-        return;
-      }
-
-      if (stream.id === clientId) {
-        return;
-      }
-
-      var track = event.track;
-
-      // ここでワーカーに登録する
+      // ここで Insertable Streams Receiver に登録する
       setupReceiverTransform(event.receiver);
     };
+  }
 }
 
 function createAnswer(peerConnection) {
@@ -71,7 +53,7 @@ function createAnswer(peerConnection) {
       peerConnection.getSenders().forEach((sender) => {
         // sender.track が null の場合が存在するのでその時は排除する
         if (sender.track !== null) {
-          // ここでワーカーに登録する
+          // ここで Insertable Streams の sender ワーカーに登録する
           setupSenderTransform(sender);
         }
       });
@@ -96,6 +78,7 @@ async function setupKey() {
   });
 }
 
+// worker への登録
 function setupSenderTransform(sender) {
   const senderStreams =
     sender.track.kind === "video"
@@ -111,6 +94,7 @@ function setupSenderTransform(sender) {
   );
 }
 
+// worker への登録
 function setupReceiverTransform(receiver) {
   const receiverStreams =
     receiver.track.kind === "video"
