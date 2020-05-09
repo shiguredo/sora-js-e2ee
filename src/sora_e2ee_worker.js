@@ -77,6 +77,7 @@ async function generateIV(ssrc, ssrcData, seqNumData) {
   const seqNumDataWithPadding = new Uint8Array(paddingLength + seqNumLength);
   seqNumDataWithPadding.set(new Uint8Array(seqNumData.buffer), paddingLength);
   const iv = new Uint8Array(seqNumDataWithPadding.byteLength);
+  // TODO(v): xor 関数化
   for (let i = 0; i < seqNumDataWithPadding.byteLength; i++) {
     iv[i] = seqNumDataWithPadding[i] ^ writeIV[i];
   }
