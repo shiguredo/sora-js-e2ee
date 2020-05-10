@@ -21,7 +21,6 @@ worker.onmessage = (event) => {
 function onMessage(event) {
   const message = JSON.parse(event.data);
   if (message.type == "offer") {
-
     let config = message.config;
     let constraints = { optional: [] };
 
