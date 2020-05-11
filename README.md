@@ -13,16 +13,18 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 
 ## Q&A
 
+- このライブラリのライセンスはなんですか？
+    - Apache License 2.0 です
 - E2EE を利用するメリットはなんですか？
-    - WebRTC SFU 側に音声や映像を見られることがなくなります
+    - WebRTC SFU 側で音声や映像の解析が困難になります
 - E2EE 用の鍵はどうやって生成すればいいですか？
     - E2EE 用の鍵についてはこのライブラリではただの文字列としてしか扱いません
-- E2EE に利用する暗号方式は何を利用していますか？
-    - AES-GCM 128 を利用しています
+- E2EE に利用する暗号方式は何を採用していますか？
+    - AES-GCM 128 を採用しています
 - E2EE に利用する暗号鍵を生成する鍵導出関数はなんですか？
     - PBKDF2 を利用します
 - E2EE に利用する IV の生成方法はなんですか？
-    - PBKDF2 の Salt に SSRC を利用して生成された 96 ビットの値と前半 64 ビットをパディングした 32 ビットのシーケンス番号の XOR を利用します
+    - PBKDF2 の Salt に SSRC を利用して生成された 96 ビットの値と前半 64 ビットを 0 パディングした 32 ビットのシーケンス番号の XOR を利用します
 - E2EE 用の鍵はどうやって利用しますか？
     - sora js sdk のオプションに `{e2ee: "key"}` として渡します
 - E2EE 用の鍵は Sora に送られますか？
@@ -37,10 +39,9 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - 暗号ライブラリは何を利用していますか？
     - WebCrypto を利用しています
 
-
 ## 利用可能環境
 
-**Insertable Streams API が Chrome M83-85 で Field Trial 中**
+**Insertable Streams API が Chrome M83-85 で FieldTrial 中**
 
 - Chrome M83 以降
 
@@ -48,6 +49,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 
 - Insertable Streams
     - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
+    - [WebRTC Insertable Media using Streams](https://alvestrand.github.io/webrtc-media-streams/)
 - WebCrypto
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - WebWorker
@@ -55,7 +57,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 
 ## 利用方法
 
-**Sora Labo での利用例**
+現時点ではまだ対応していない `Sora JavaScript SDK` からの利用例。
 
 ```javascript
 let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
