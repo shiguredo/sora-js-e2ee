@@ -1,3 +1,4 @@
+import fs from "fs";
 import minify from "rollup-plugin-babel-minify";
 import typescript from "rollup-plugin-typescript2";
 import replace from "@rollup/plugin-replace";
@@ -15,13 +16,15 @@ const banner = `/**
  * @license: ${pkg.license}
  **/
 `;
+const workerScript = fs.readFileSync("./_worker/sora_e2ee_worker.js", "base64");
 
 export default [
   {
-    input: "src/sora-e2ee.ts",
+    input: "src/sora_e2ee.ts",
     plugins: [
       replace({
         SORA_E2EE_VERSION: `'${pkg.version}'`,
+        WORKER_SCRIPT: workerScript,
       }),
       typescript({
         tsconfig: "./tsconfig.json",
@@ -29,17 +32,18 @@ export default [
     ],
     output: {
       sourcemap: false,
-      file: "dist/sora-e2ee.js",
+      file: "dist/sora_e2ee.js",
       format: "umd",
-      name: "Sora",
+      name: "SoraE2EE",
       banner: banner,
     },
   },
   {
-    input: "src/sora-e2ee.ts",
+    input: "src/sora_e2ee.ts",
     plugins: [
       replace({
         SORA_E2EE_VERSION: `'${pkg.version}'`,
+        WORKER_SCRIPT: workerScript,
       }),
       typescript({
         tsconfig: "./tsconfig.json",
@@ -50,9 +54,9 @@ export default [
     ],
     output: {
       sourcemap: true,
-      file: "dist/sora-e2ee.min.js",
+      file: "dist/sora_e2ee.min.js",
       format: "umd",
-      name: "Sora-E2EE",
+      name: "SoraE2EE",
       banner: banner,
     },
   },
