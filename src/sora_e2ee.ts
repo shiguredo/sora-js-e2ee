@@ -1,41 +1,40 @@
 class SoraE2EE {
   worker: Worker | null;
+  masterKey: ArrayBuffer;
+  onWorkerDisconnect: Function | null;
 
-  constructor() {
+  constructor(masterSecret: string) {
+    // 対応しているかどうかの判断
+    // @ts-ignore トライアル段階の API なので無視する
+    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedVideoStreams;
+    if (!supportsInsertableStreams) {
+      throw new Error("E2EE is not supported in this browser");
+    }
     this.worker = null;
+    this.masterKey = new TextEncoder().encode(masterSecret);
+    this.onWorkerDisconnect = null;
   }
   // worker を起動する
   startWorker(): void {
-    // 対応しているかどうかの判断
-    // @ts-ignore
-    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedVideoStreams;
-    if (!supportsInsertableStreams) {
-      // TODO(yuito): エラー対応する
-      throw new Error("Error");
-    }
-
     // ワーカーを起動する
     const workerScript = atob("WORKER_SCRIPT");
     this.worker = new Worker(URL.createObjectURL(new Blob([workerScript], { type: "application/javascript" })));
-  }
-
-  // location.hash から鍵を生成して worker に送るコード
-  setupKey(): void {
-    const masterSecret = window.location.hash;
-    const masterKey = new TextEncoder().encode(masterSecret);
-
-    if (this.worker) {
-      this.worker.postMessage({
-        operation: "setKey",
-        masterKey,
-      });
-    }
+    this.worker.onmessage = (event): void => {
+      const { operation } = event.data;
+      if (operation === "disconnect" && typeof this.onWorkerDisconnect === "function") {
+        this.onWorkerDisconnect();
+      }
+    };
+    this.worker.postMessage({
+      operation: "setKey",
+      masterKey: this.masterKey,
+    });
   }
   // worker への登録
   setupSenderTransform(sender: RTCRtpSender): void {
     if (!sender.track) return;
     const senderStreams =
-      // @ts-ignore
+      // @ts-ignore トライアル段階の API なので無視する
       sender.track.kind === "video" ? sender.createEncodedVideoStreams() : sender.createEncodedAudioStreams();
     if (this.worker) {
       this.worker.postMessage(
@@ -51,7 +50,7 @@ class SoraE2EE {
   // worker への登録
   setupReceiverTransform(receiver: RTCRtpReceiver): void {
     const receiverStreams =
-      // @ts-ignore
+      // @ts-ignore トライアル段階の API なので無視する
       receiver.track.kind === "video" ? receiver.createEncodedVideoStreams() : receiver.createEncodedAudioStreams();
     if (this.worker) {
       this.worker.postMessage(
