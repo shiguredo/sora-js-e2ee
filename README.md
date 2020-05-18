@@ -1,11 +1,5 @@
 # Sora JS E2EE ライブラリ
 
-**現在リリース準備中です**
-
-## 現在実験的に Sora Labo でサンプルが利用可能です
-
-[Sora Labo](https://sora-labo.shiguredo.jp/) のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
-
 ## 概要
 
 WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
@@ -55,9 +49,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - WebWorker
     - [Web Workers](https://w3c.github.io/workers/)
 
-## 利用方法
-
-現時点ではまだ対応していない `Sora JavaScript SDK` からの利用例。
+## Sora JavaScript SDK からの利用方法
 
 ```javascript
 let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
@@ -88,6 +80,11 @@ sendrecv.on('disconnect', function(e) {
   console.error(e);
 });
 ```
+
+## 現在 Sora Labo でサンプルが利用可能です
+
+[Sora Labo](https://sora-labo.shiguredo.jp/) のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
+
 
 ## ライセンス
 
