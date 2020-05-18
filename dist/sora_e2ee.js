@@ -74,6 +74,10 @@
               }, [receiverStreams.readableStream, receiverStreams.writableStream]);
           }
       }
+      static version() {
+          // @ts-ignore
+          return '2020.1.0-dev';
+      }
   }
 
   return SoraE2EE;

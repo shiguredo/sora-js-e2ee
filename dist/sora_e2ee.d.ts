@@ -7,5 +7,6 @@ declare class SoraE2EE {
     terminateWorker(): void;
     setupSenderTransform(sender: RTCRtpSender): void;
     setupReceiverTransform(receiver: RTCRtpReceiver): void;
+    static version(): string;
 }
 export default SoraE2EE;
