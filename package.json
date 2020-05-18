@@ -6,12 +6,13 @@
   "module": "dist/sora_e2ee.min.js",
   "types": "dist/sora_e2ee.d.ts",
   "scripts": {
-    "build": "yarn build:worker && yarn build:main",
-    "build:main": "NODE_ENV=development rollup -c rollup.config.js",
-    "build:worker": "NODE_ENV=development rollup -c rollup.worker.config.js",
+    "build": "yarn build:worker && yarn build:development",
+    "build:development": "NODE_ENV=development rollup -c rollup.config.js",
+    "build:production": "NODE_ENV=production rollup -c rollup.config.js",
+    "build:worker": "rollup -c rollup.worker.config.js",
     "watch": "NODE_ENV=development rollup -c -w",
     "prerelease": "yarn lint",
-    "release": "NODE_ENV=production rollup -c",
+    "release": "yarn build:worker && yarn build:production",
     "lint": "eslint --ext .ts ./src",
     "fmt": "eslint --fix --ext .ts ./src"
   },
