@@ -69,6 +69,11 @@ class SoraE2EE {
       );
     }
   }
+
+  static version(): string {
+    // @ts-ignore
+    return SORA_E2EE_VERSION;
+  }
 }
 
 export default SoraE2EE;
