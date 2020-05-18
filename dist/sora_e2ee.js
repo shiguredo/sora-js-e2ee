@@ -40,6 +40,12 @@
               masterKey: this.masterKey,
           });
       }
+      // worker を終了する
+      terminateWorker() {
+          if (this.worker) {
+              this.worker.terminate();
+          }
+      }
       // worker への登録
       setupSenderTransform(sender) {
           if (!sender.track)

@@ -4,6 +4,7 @@ declare class SoraE2EE {
     onWorkerDisconnect: Function | null;
     constructor(masterSecret: string);
     startWorker(): void;
+    terminateWorker(): void;
     setupSenderTransform(sender: RTCRtpSender): void;
     setupReceiverTransform(receiver: RTCRtpReceiver): void;
 }

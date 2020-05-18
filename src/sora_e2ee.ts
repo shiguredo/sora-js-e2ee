@@ -30,6 +30,12 @@ class SoraE2EE {
       masterKey: this.masterKey,
     });
   }
+  // worker を終了する
+  terminateWorker(): void {
+    if (this.worker) {
+      this.worker.terminate();
+    }
+  }
   // worker への登録
   setupSenderTransform(sender: RTCRtpSender): void {
     if (!sender.track) return;
