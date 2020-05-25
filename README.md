@@ -36,9 +36,15 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - 暗号化/復号が入るので遅くはなりますが WebWorker を利用することで可能な範囲で高速化はしています
 - 暗号ライブラリは何を利用していますか？
     - WebCrypto を利用しています
+- MasterSecret の共有方法は対応していますか？
+    - 現時点では対応していません
+- 定期的な鍵交換には対応していますか？
+    - 現時点では対応していません
+- [Secure Frame](https://tools.ietf.org/html/draft-omara-sframe-00) には対応しますか？
+    - 対応予定です
+
 
 ## 利用可能環境
-
 
 - Chrome M83 以降
 - Insertable Streams API が Chrome M83-85 で Origin Trial 中
@@ -53,6 +59,9 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - WebWorker
     - [Web Workers](https://w3c.github.io/workers/)
+- Secure Frame
+    - 利用予定
+    - [Secure Frame \(SFrame\)](https://tools.ietf.org/html/draft-omara-sframe-00)
 
 ## Sora JavaScript SDK からの利用方法
 
@@ -89,7 +98,6 @@ sendrecv.on('disconnect', function(e) {
 ## 現在 Sora Labo でサンプルが利用可能です
 
 [Sora Labo](https://sora-labo.shiguredo.jp/) のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
-
 
 ## ライセンス
 
