@@ -57,7 +57,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - [WebRTC Insertable Media using Streams](https://alvestrand.github.io/webrtc-media-streams/)
 - WebCrypto
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
-- WebWorker
+- Web Worker
     - [Web Workers](https://w3c.github.io/workers/)
 - Secure Frame
     - 利用予定
