@@ -11,6 +11,10 @@
 
 ## develop
 
+## 2020.2.0
+
+- [UPDATE] createEncodedStreams を利用するようにする
+
 ## 2020.1.0
 
 - **公開**
