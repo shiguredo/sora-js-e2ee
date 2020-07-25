@@ -6,7 +6,7 @@ class SoraE2EE {
   constructor(masterSecret: string) {
     // 対応しているかどうかの判断
     // @ts-ignore トライアル段階の API なので無視する
-    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedVideoStreams;
+    const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams;
     if (!supportsInsertableStreams) {
       throw new Error("E2EE is not supported in this browser");
     }
@@ -39,9 +39,8 @@ class SoraE2EE {
   // worker への登録
   setupSenderTransform(sender: RTCRtpSender): void {
     if (!sender.track) return;
-    const senderStreams =
-      // @ts-ignore トライアル段階の API なので無視する
-      sender.track.kind === "video" ? sender.createEncodedVideoStreams() : sender.createEncodedAudioStreams();
+    // @ts-ignore トライアル段階の API なので無視する
+    const senderStreams = sender.createEncodedStreams();
     if (this.worker) {
       this.worker.postMessage(
         {
@@ -55,9 +54,8 @@ class SoraE2EE {
   }
   // worker への登録
   setupReceiverTransform(receiver: RTCRtpReceiver): void {
-    const receiverStreams =
-      // @ts-ignore トライアル段階の API なので無視する
-      receiver.track.kind === "video" ? receiver.createEncodedVideoStreams() : receiver.createEncodedAudioStreams();
+    // @ts-ignore トライアル段階の API なので無視する
+    const receiverStreams = receiver.createEncodedStreams();
     if (this.worker) {
       this.worker.postMessage(
         {

@@ -1,6 +1,6 @@
 {
   "name": "sora-e2ee",
-  "version": "2020.1.0",
+  "version": "2020.2.0",
   "description": "WebRTC SFU Sora JavaScript E2EE Library",
   "main": "dist/sora_e2ee.min.js",
   "module": "dist/sora_e2ee.min.js",
