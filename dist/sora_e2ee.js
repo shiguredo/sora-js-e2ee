@@ -1,7 +1,7 @@
 /**
  * sora-e2ee
  * WebRTC SFU Sora JavaScript E2EE Library
- * @version: 2020.1.0
+ * @version: 2020.2.0
  * @author: Shiguredo Inc.
  * @license: Apache-2.0
  **/
@@ -74,7 +74,7 @@
       }
       static version() {
           // @ts-ignore
-          return '2020.1.0';
+          return '2020.2.0';
       }
   }
 
