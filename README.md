@@ -7,7 +7,7 @@
 ## 概要
 
 WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
-これ単体では利用できず Sora JS SDK と合わせて利用します。
+これ単体では利用できず Sora JS SDK と Sora E2EE WebAssembly を合わせて利用します。
 
 ## Q&A
 
@@ -15,31 +15,36 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - Apache License 2.0 です
 - E2EE を利用するメリットはなんですか？
     - WebRTC SFU 側で音声や映像の解析が困難になります
+- E2EE の鍵合意プロトコルはなにを使用していますか？
+    - Signal プロトコルの X3DH を利用しています
+- E2EE のメッセージ暗号アルゴリズムはなにを使用していますか？
+    - Signal プロトコルの Double Ratchet アルゴリズムを利用しています
 - E2EE 用の鍵はどうやって生成すればいいですか？
-    - E2EE 用の鍵についてはこのライブラリではただの文字列としてしか扱いません
+    - 鍵は WebAssembly で動的に生成されます
 - E2EE に利用する暗号方式は何を採用していますか？
     - AES-GCM 128 を採用しています
 - E2EE に利用する暗号鍵を生成する鍵導出関数はなんですか？
     - PBKDF2 を利用します
 - E2EE に利用する IV の生成方法はなんですか？
     - PBKDF2 の Salt に SSRC を利用して生成された 96 ビットの値と前半 64 ビットを 0 パディングした 32 ビットのシーケンス番号の XOR を利用します
-- E2EE 用の鍵はどうやって利用しますか？
-    - Sora JS SDK のオプションに `{e2ee: "key"}` として渡します
+- E2EE 用の鍵はどう扱われますか？
+    - 鍵は WebAssembly 側で動的に生成されます
 - E2EE 用の鍵は Sora に送られますか？
     - 送られません Sora には `{e2ee: true}` という値のみが送られます
     - この値は E2EE を利用しているかどうかを把握するために利用されます
 - E2EE で利用する暗号鍵の利用回数が 2^32-1 回を超えたらどうなりますか？
-    - 鍵の更新は行わず切断します
+    - 切断します
 - E2EE はどうやって実現していますか？
     - Insertable Streams API を利用して実現しています
 - E2EE を利用すると遅くなりますか？
     - 暗号化/復号が入るので遅くはなりますが WebWorker を利用することで可能な範囲で高速化はしています
 - 暗号ライブラリは何を利用していますか？
     - WebCrypto を利用しています
+    - WebCrypto が対応していない暗号については WebAssembly を利用しています
 - MasterSecret の共有方法は対応していますか？
     - 現時点では対応していません
-- 定期的な鍵交換には対応していますか？
-    - 現時点では対応していません
+- 定期的な鍵交換は行いますか？
+    - チャネルで参加、離脱が発生するたびに鍵が更新されます
 - [Secure Frame](https://tools.ietf.org/html/draft-omara-sframe-00) には対応しますか？
     - 対応予定です
 
@@ -59,6 +64,16 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - Web Worker
     - [Web Workers](https://w3c.github.io/workers/)
+- WebAssembly
+    - [WebAssembly \| MDN](https://developer.mozilla.org/ja/docs/WebAssembly)
+- The XEdDSA and VXEdDSA Signature Schemes
+    - [Signal >> Specifications >> The XEdDSA and VXEdDSA Signature Schemes](https://signal.org/docs/specifications/xeddsa/)
+- The X3DH Key Agreement Protocol
+    - [Signal >> Specifications >> The X3DH Key Agreement Protocol](https://signal.org/docs/specifications/x3dh/)
+- The Double Ratchet Algorithm
+    - [Signal >> Specifications >> The Double Ratchet Algorithm](https://signal.org/docs/specifications/doubleratchet/)
+- Go "syscall/js"
+    - [js \- The Go Programming Language](https://golang.org/pkg/syscall/js/)
 - Secure Frame
     - 利用予定
     - [Secure Frame \(SFrame\)](https://tools.ietf.org/html/draft-omara-sframe-00)
@@ -69,7 +84,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
 let channelId = 'shiguredo@sora-labo';
 let metadata = {'signaling_key': 'VBmHJ75tjP_NPpHPDwDHfuf84LtNtOx0-ElOZ0qlU7xQ0QtV'};
-let sendrecv = sora.sendrecv(channelId, metadata, {e2ee: 'e2ee-secret-key'});
+let sendrecv = sora.sendrecv(channelId, metadata, {e2ee: true});
 
 navigator.mediaDevices.getUserMedia({audio: true, video: true})
   .then(mediaStream => {
