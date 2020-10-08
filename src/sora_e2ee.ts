@@ -41,14 +41,16 @@ class SoraE2EE {
     if (!sender.track) return;
     // @ts-ignore トライアル段階の API なので無視する
     const senderStreams = sender.createEncodedStreams();
+    const readableStream = senderStreams.readableStream || senderStreams.readable;
+    const writableStream = senderStreams.writableStream || senderStreams.writable;
     if (this.worker) {
       this.worker.postMessage(
         {
           operation: "encrypt",
-          readableStream: senderStreams.readableStream,
-          writableStream: senderStreams.writableStream,
+          readableStream: readableStream,
+          writableStream: writableStream,
         },
-        [senderStreams.readableStream, senderStreams.writableStream]
+        [readableStream, writableStream]
       );
     }
   }
@@ -56,14 +58,16 @@ class SoraE2EE {
   setupReceiverTransform(receiver: RTCRtpReceiver): void {
     // @ts-ignore トライアル段階の API なので無視する
     const receiverStreams = receiver.createEncodedStreams();
+    const readableStream = receiverStreams.readableStream || receiverStreams.readable;
+    const writableStream = receiverStreams.writableStream || receiverStreams.writable;
     if (this.worker) {
       this.worker.postMessage(
         {
           operation: "decrypt",
-          readableStream: receiverStreams.readableStream,
-          writableStream: receiverStreams.writableStream,
+          readableStream: readableStream,
+          writableStream: writableStream,
         },
-        [receiverStreams.readableStream, receiverStreams.writableStream]
+        [readableStream, writableStream]
       );
     }
   }
