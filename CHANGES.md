@@ -9,7 +9,7 @@
 - FIX
     - バグ修正
 
-## develop
+## 2020.3.0
 
 - [UPDATE] Insertable Streams API の変更に追従する
     - @yuitowest
