@@ -1,5 +1,7 @@
 # Sora JS E2EE ライブラリ
 
+**現在 WebAssembly を利用したバージョンは開発中です**
+
 [![GitHub tag](https://img.shields.io/github/tag/shiguredo/sora-e2ee.svg)](https://github.com/shiguredo/sora-e2ee)
 [![npm version](https://badge.fury.io/js/sora-e2ee.svg)](https://badge.fury.io/js/sora-e2ee)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -7,7 +9,7 @@
 ## 概要
 
 WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
-これ単体では利用できず Sora JS SDK と Sora E2EE WebAssembly を合わせて利用します。
+これ単体では利用できず [Sora JS SDK](https://github.com/shiguredo/sora-js-sdk) と [Sora E2EE WebAssembly](https://github.com/shiguredo/sora-e2ee-wasm) を合わせて利用します。
 
 ## Q&A
 
@@ -19,40 +21,39 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - Signal プロトコルの X3DH を利用しています
 - E2EE のメッセージ暗号アルゴリズムはなにを使用していますか？
     - Signal プロトコルの Double Ratchet アルゴリズムを利用しています
-- E2EE 用の鍵はどうやって生成すればいいですか？
-    - 鍵は WebAssembly で動的に生成されます
+- E2EE 用のキーペアはどうやって生成すればいいですか？
+    - キーペアは WebAssembly で動的に生成されます
 - E2EE に利用する暗号方式は何を採用していますか？
     - AES-GCM 128 を採用しています
 - E2EE に利用する暗号鍵を生成する鍵導出関数はなんですか？
-    - PBKDF2 を利用します
+    - HKDF を利用します
 - E2EE に利用する IV の生成方法はなんですか？
-    - PBKDF2 の Salt に SSRC を利用して生成された 96 ビットの値と前半 64 ビットを 0 パディングした 32 ビットのシーケンス番号の XOR を利用します
-- E2EE 用の鍵はどう扱われますか？
-    - 鍵は WebAssembly 側で動的に生成されます
+    - HKDF を利用して生成された 96 ビットの値と前半 64 ビットを 0 パディングした 32 ビットのシーケンス番号の XOR を利用します
+- E2EE 用のキーペアはどう扱われますか？
+    - 利用するキーペアは WebAssembly 側で動的に生成されます
 - E2EE 用の鍵は Sora に送られますか？
-    - 送られません Sora には `{e2ee: true}` という値のみが送られます
-    - この値は E2EE を利用しているかどうかを把握するために利用されます
-- E2EE で利用する暗号鍵の利用回数が 2^32-1 回を超えたらどうなりますか？
+    - 送られません Sora には `{e2ee: true}` という値のみが Sora に送られます
+    - この値は E2EE を利用しているかどうかを認証サーバ側で把握するために利用されます
+- E2EE で利用するキーの利用回数が 2^32-1 回を超えたらどうなりますか？
     - 切断します
 - E2EE はどうやって実現していますか？
-    - Insertable Streams API を利用して実現しています
+    - Insertable Streams API を利用しています
 - E2EE を利用すると遅くなりますか？
     - 暗号化/復号が入るので遅くはなりますが WebWorker を利用することで可能な範囲で高速化はしています
+- E2EE を利用すると CPU 使用率は上がりますか？
+    - E2EE 用の暗号化/復号を行うため CPU 使用率は上がります
 - 暗号ライブラリは何を利用していますか？
-    - WebCrypto を利用しています
-    - WebCrypto が対応していない暗号については WebAssembly を利用しています
-- MasterSecret の共有方法は対応していますか？
-    - 現時点では対応していません
+    - Web Crypto を利用しています
 - 定期的な鍵交換は行いますか？
-    - チャネルで参加、離脱が発生するたびに鍵が更新されます
-- [Secure Frame](https://tools.ietf.org/html/draft-omara-sframe-00) には対応しますか？
-    - 対応予定です
-
+    - チャネルへの参加、離脱が発生するたびにマテリアルキーが更新されます
+- [Secure Frame](https://tools.ietf.org/html/draft-omara-sframe-00) は利用していますか？
+    - 採用しています
+    - 暗号化には AES-GCM 128 を採用しています
 
 ## 利用可能環境
 
 - Chrome M83 以降
-- Insertable Streams API が Chrome M83-85 で Origin Trial 中
+- Insertable Streams API が Chrome M83-87 で Origin Trial 中
     - [Origin Trials](https://developers.chrome.com/origintrials/#/view_trial/731834939447705601)
 
 ## 利用技術
@@ -66,8 +67,6 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
     - [Web Workers](https://w3c.github.io/workers/)
 - WebAssembly
     - [WebAssembly \| MDN](https://developer.mozilla.org/ja/docs/WebAssembly)
-- The XEdDSA and VXEdDSA Signature Schemes
-    - [Signal >> Specifications >> The XEdDSA and VXEdDSA Signature Schemes](https://signal.org/docs/specifications/xeddsa/)
 - The X3DH Key Agreement Protocol
     - [Signal >> Specifications >> The X3DH Key Agreement Protocol](https://signal.org/docs/specifications/x3dh/)
 - The Double Ratchet Algorithm
@@ -75,7 +74,6 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - Go "syscall/js"
     - [js \- The Go Programming Language](https://golang.org/pkg/syscall/js/)
 - Secure Frame
-    - 利用予定
     - [Secure Frame \(SFrame\)](https://tools.ietf.org/html/draft-omara-sframe-00)
 
 ## Sora JavaScript SDK からの利用方法
@@ -109,10 +107,6 @@ sendrecv.on('disconnect', function(e) {
   console.error(e);
 });
 ```
-
-## 現在 Sora Labo でサンプルが利用可能です
-
-[Sora Labo](https://sora-labo.shiguredo.jp/) のダッシュボードの `E2EE マルチストリーム送受信` を触ってみてください。
 
 ## ライセンス
 
