@@ -51,7 +51,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 ## 利用可能環境
 
 - Chrome M83 以降
-- Insertable Streams API が Chrome M83-85 で Origin Trial 中
+- Insertable Streams API が Chrome M83-83 で Origin Trial 中
     - [Origin Trials](https://developers.chrome.com/origintrials/#/view_trial/731834939447705601)
 
 ## 利用技術
@@ -59,7 +59,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - Insertable Streams
     - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
     - [WebRTC Insertable Media using Streams](https://alvestrand.github.io/webrtc-media-streams/)
-- WebCrypto
+- Web Crypto
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - Web Worker
     - [Web Workers](https://w3c.github.io/workers/)
