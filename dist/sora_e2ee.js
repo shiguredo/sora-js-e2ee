@@ -1,7 +1,7 @@
 /**
  * sora-e2ee
  * WebRTC SFU Sora JavaScript E2EE Library
- * @version: 2020.2.0
+ * @version: 2020.3.0-dev
  * @author: Shiguredo Inc.
  * @license: Apache-2.0
  **/
@@ -52,29 +52,33 @@
               return;
           // @ts-ignore トライアル段階の API なので無視する
           const senderStreams = sender.createEncodedStreams();
+          const readableStream = senderStreams.readableStream || senderStreams.readable;
+          const writableStream = senderStreams.writableStream || senderStreams.writable;
           if (this.worker) {
               this.worker.postMessage({
                   operation: "encrypt",
-                  readableStream: senderStreams.readableStream,
-                  writableStream: senderStreams.writableStream,
-              }, [senderStreams.readableStream, senderStreams.writableStream]);
+                  readableStream: readableStream,
+                  writableStream: writableStream,
+              }, [readableStream, writableStream]);
           }
       }
       // worker への登録
       setupReceiverTransform(receiver) {
           // @ts-ignore トライアル段階の API なので無視する
           const receiverStreams = receiver.createEncodedStreams();
+          const readableStream = receiverStreams.readableStream || receiverStreams.readable;
+          const writableStream = receiverStreams.writableStream || receiverStreams.writable;
           if (this.worker) {
               this.worker.postMessage({
                   operation: "decrypt",
-                  readableStream: receiverStreams.readableStream,
-                  writableStream: receiverStreams.writableStream,
-              }, [receiverStreams.readableStream, receiverStreams.writableStream]);
+                  readableStream: readableStream,
+                  writableStream: writableStream,
+              }, [readableStream, writableStream]);
           }
       }
       static version() {
           // @ts-ignore
-          return '2020.2.0';
+          return '2020.3.0-dev';
       }
   }
 

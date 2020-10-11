@@ -6,6 +6,10 @@
 [![npm version](https://badge.fury.io/js/sora-e2ee.svg)](https://badge.fury.io/js/sora-e2ee)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## 時雨堂のオープンソースソフトウェアについて
+
+利用前に https://github.com/shiguredo/oss をお読みください。
+
 ## 概要
 
 WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
@@ -61,7 +65,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - Insertable Streams
     - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
     - [WebRTC Insertable Media using Streams](https://alvestrand.github.io/webrtc-media-streams/)
-- WebCrypto
+- Web Crypto
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - Web Worker
     - [Web Workers](https://w3c.github.io/workers/)

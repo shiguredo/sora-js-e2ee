@@ -11,9 +11,15 @@
 
 ## develop
 
+## 2020.3.0
+
+- [UPDATE] Insertable Streams API の変更に追従する
+    - @yuitowest
+
 ## 2020.2.0
 
 - [UPDATE] createEncodedStreams を利用するようにする
+    - @yuitowest
 
 ## 2020.1.0
 
