@@ -59,7 +59,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - Insertable Streams
     - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
     - [WebRTC Insertable Media using Streams](https://alvestrand.github.io/webrtc-media-streams/)
-- Web Crypto
+- WebCrypto
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - Web Worker
     - [Web Workers](https://w3c.github.io/workers/)
