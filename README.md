@@ -1,6 +1,6 @@
 # Sora JS E2EE ライブラリ
 
-**現在 WebAssembly を利用したバージョンは開発中です**
+**現在 WebAssembly を利用したバージョンは準備です**
 
 [![GitHub tag](https://img.shields.io/github/tag/shiguredo/sora-e2ee.svg)](https://github.com/shiguredo/sora-e2ee)
 [![npm version](https://badge.fury.io/js/sora-e2ee.svg)](https://badge.fury.io/js/sora-e2ee)
