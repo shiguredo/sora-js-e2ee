@@ -13,7 +13,7 @@
 ## 概要
 
 WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライブラリです。
-これ単体では利用できず [Sora JS SDK](https://github.com/shiguredo/sora-js-sdk) と [Sora E2EE WebAssembly](https://github.com/shiguredo/sora-e2ee-wasm) を合わせて利用します。
+これ単体では利用できず [Sora JS SDK](https://github.com/shiguredo/sora-js-sdk) と [Sora E2EE Go](https://github.com/shiguredo/sora-e2ee-go) を合わせて利用します。
 
 ## Q&A
 
@@ -86,7 +86,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 let sora = Sora.connection('wss://sora-labo.shiguredo.jp/signaling');
 let channelId = 'shiguredo@sora-labo';
 let metadata = {'signaling_key': 'VBmHJ75tjP_NPpHPDwDHfuf84LtNtOx0-ElOZ0qlU7xQ0QtV'};
-let sendrecv = sora.sendrecv(channelId, metadata, {e2ee: true});
+let sendrecv = sora.sendrecv(channelId, metadata, {e2ee: true, e2ee_wasm_url: "https://sora-labo.shiguredo.jp/e2ee/wasm.wasm"});
 
 navigator.mediaDevices.getUserMedia({audio: true, video: true})
   .then(mediaStream => {
