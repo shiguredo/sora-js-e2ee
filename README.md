@@ -43,11 +43,11 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - E2EE はどうやって実現していますか？
     - Insertable Streams API を利用しています
 - E2EE を利用すると遅くなりますか？
-    - 暗号化/復号が入るので遅くはなりますが WebWorker を利用することで可能な範囲で高速化はしています
+    - 暗号化/復号が入るので遅くはなりますが Web Worker を利用することで可能な範囲で高速化はしています
 - E2EE を利用すると CPU 使用率は上がりますか？
     - E2EE 用の暗号化/復号を行うため CPU 使用率は上がります
 - 暗号ライブラリは何を利用していますか？
-    - Web Crypto を利用しています
+    - WebCrypto を利用しています
 - 定期的な鍵交換は行いますか？
     - チャネルへの参加、離脱が発生するたびにマテリアルキーが更新されます
 - [Secure Frame](https://tools.ietf.org/html/draft-omara-sframe-00) は利用していますか？
@@ -66,7 +66,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - Insertable Streams
     - [WebRTC Insertable Streams \- Chrome Platform Status](https://www.chromestatus.com/feature/6321945865879552)
     - [WebRTC Insertable Media using Streams](https://alvestrand.github.io/webrtc-media-streams/)
-- Web Crypto
+- WebCrypto
     - [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/)
 - Web Worker
     - [Web Workers](https://w3c.github.io/workers/)
