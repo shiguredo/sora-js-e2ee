@@ -56,7 +56,8 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 
 ## 利用可能環境
 
-- Chrome M83 以降
+- Chrome M8６ 以降
+- Edge 8６ 以降
 - Insertable Streams API が Chrome M83-87 で Origin Trial 中
     - [Origin Trials](https://developers.chrome.com/origintrials/#/view_trial/731834939447705601)
 
