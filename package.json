@@ -9,7 +9,7 @@
     "build": "yarn build:worker && yarn build:development",
     "build:development": "NODE_ENV=development rollup -c rollup.config.js",
     "build:production": "NODE_ENV=production rollup -c rollup.config.js",
-    "build:worker": "rollup -c rollup.worker.config.js",
+    "build:worker": "npx tsc --project tsconfig.worker.json",
     "watch": "NODE_ENV=development rollup -c -w",
     "prerelease": "yarn lint",
     "release": "yarn build:worker && yarn build:production",

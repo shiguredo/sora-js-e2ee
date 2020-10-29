@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
+    "module": "amd",
     "strict": true,
     "strictNullChecks": true,
     "importHelpers": true,
@@ -15,13 +15,15 @@
     ],
     "lib": [
       "esnext",
+      "es2017",
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
+    ],
+    "outFile": "./_worker/sora_e2ee_worker.js"
   },
   "include": [
-    "src/sora_e2ee_worker.ts"
+    "src/worker/index.ts"
   ],
   "exclude": [
     "node_modules"
