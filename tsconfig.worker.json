@@ -10,15 +10,11 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "newLine": "LF",
-    "types": [
-      "webrtc"
-    ],
+    "types": [],
     "lib": [
       "esnext",
       "es2017",
-      "dom",
-      "dom.iterable",
-      "scripthost"
+      "webWorker"
     ],
     "outFile": "./_worker/sora_e2ee_worker.js"
   },
