@@ -208,7 +208,6 @@ async function encryptFunction(encodedFrame: Chunk, controller: TransformStreamD
 
   // count が 32 bit 以上の場合は停止する
   if (currentCount > maxCount) {
-    // @ts-ignore
     postMessage({ type: "disconnect" });
   }
 
