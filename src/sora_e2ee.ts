@@ -1,9 +1,78 @@
+type PreKeyBundle = {
+  identityKey: string;
+  signedPreKey: string;
+  preKeySignature: string;
+};
+
+type RemoteSecretKeyMaterial = {
+  keyId: number;
+  secretKeyMaterial: Uint8Array;
+};
+
+type ReceiveMessageResult = {
+  remoteSecretKeyMaterials: Record<string, RemoteSecretKeyMaterial>;
+  messages: Uint8Array[];
+};
+
+type StartResult = {
+  selfKeyId: number;
+  selfSecretKeyMaterial: Uint8Array;
+};
+
+type StartSessionResult = {
+  selfConnectionId: string;
+  selfKeyId: number;
+  selfSecretKeyMaterial: Uint8Array;
+  remoteSecretKeyMaterials: Record<string, RemoteSecretKeyMaterial>;
+  messages: Uint8Array[];
+};
+
+type StopSessionResult = {
+  selfConnectionId: string;
+  selfKeyId: number;
+  selfSecretKeyMaterial: Uint8Array;
+  messages: Uint8Array[];
+};
+
+interface E2EE {
+  init(): Promise<{ preKeyBundle: PreKeyBundle }>;
+  addPreKeyBundle(
+    connectionId: string,
+    identityKey: string,
+    signedPreKey: string,
+    preKeySignature: string
+  ): Error | null;
+  receiveMessage(message: Uint8Array): [ReceiveMessageResult, Error | null];
+  remoteFingerprints(): Record<string, string>;
+  selfFingerprint(): string;
+  start(selfConnectionId: string): [StartResult, Error | null];
+  startSession(
+    connectionId: string,
+    identityKey: string,
+    signedPreKey: string,
+    preKeySignature: string
+  ): [StartSessionResult, Error | null];
+  stopSession(connectionId: string): [StopSessionResult, Error | null];
+}
+
+declare class Go {
+  importObject: {
+    go: Record<string, () => {}>;
+  };
+  run(instance: unknown): Promise<void>;
+}
+
+interface E2EEWindow extends Window {
+  Go: Go;
+  e2ee: E2EE;
+}
+declare let window: E2EEWindow;
+
 class SoraE2EE {
   worker: Worker | null;
-  masterKey: ArrayBuffer;
   onWorkerDisconnect: Function | null;
 
-  constructor(masterSecret: string) {
+  constructor() {
     // 対応しているかどうかの判断
     // @ts-ignore トライアル段階の API なので無視する
     const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams;
@@ -11,7 +80,6 @@ class SoraE2EE {
       throw new Error("E2EE is not supported in this browser");
     }
     this.worker = null;
-    this.masterKey = new TextEncoder().encode(masterSecret);
     this.onWorkerDisconnect = null;
   }
   // worker を起動する
@@ -25,10 +93,14 @@ class SoraE2EE {
         this.onWorkerDisconnect();
       }
     };
-    this.worker.postMessage({
-      operation: "setKey",
-      masterKey: this.masterKey,
-    });
+  }
+  // worker の掃除をする
+  clearWorker(): void {
+    if (this.worker) {
+      this.worker.postMessage({
+        type: "clear",
+      });
+    }
   }
   // worker を終了する
   terminateWorker(): void {
@@ -36,7 +108,23 @@ class SoraE2EE {
       this.worker.terminate();
     }
   }
-  // worker への登録
+  // 初期化処理
+  async init(): Promise<PreKeyBundle> {
+    if (!window.Go) {
+      // TODO(yuito): 適切なエラーメッセージにする
+      throw new Error(`window.Go is ${window.Go}`);
+    }
+    const go = new Go();
+    const { instance } = await WebAssembly.instantiateStreaming(fetch("wasm.wasm"), go.importObject);
+    go.run(instance);
+    if (!window.e2ee) {
+      // TODO(yuito): 適切なエラーメッセージにする
+      throw new Error(`window.e2ee is ${window.e2ee}`);
+    }
+    const { preKeyBundle } = await window.e2ee.init();
+    return preKeyBundle;
+  }
+
   setupSenderTransform(sender: RTCRtpSender): void {
     if (!sender.track) return;
     // @ts-ignore トライアル段階の API なので無視する
@@ -44,32 +132,115 @@ class SoraE2EE {
     const readableStream = senderStreams.readableStream || senderStreams.readable;
     const writableStream = senderStreams.writableStream || senderStreams.writable;
     if (this.worker) {
-      this.worker.postMessage(
-        {
-          operation: "encrypt",
-          readableStream: readableStream,
-          writableStream: writableStream,
-        },
-        [readableStream, writableStream]
-      );
+      const message = {
+        type: "encrypt",
+        readableStream: readableStream,
+        writableStream: writableStream,
+      };
+      this.worker.postMessage(message, [readableStream, writableStream]);
     }
   }
-  // worker への登録
+
   setupReceiverTransform(receiver: RTCRtpReceiver): void {
     // @ts-ignore トライアル段階の API なので無視する
     const receiverStreams = receiver.createEncodedStreams();
     const readableStream = receiverStreams.readableStream || receiverStreams.readable;
     const writableStream = receiverStreams.writableStream || receiverStreams.writable;
     if (this.worker) {
-      this.worker.postMessage(
-        {
-          operation: "decrypt",
-          readableStream: readableStream,
-          writableStream: writableStream,
-        },
-        [readableStream, writableStream]
-      );
+      const message = {
+        type: "decrypt",
+        readableStream: readableStream,
+        writableStream: writableStream,
+      };
+      this.worker.postMessage(message, [readableStream, writableStream]);
     }
+  }
+
+  workerPostRemoteSecretKeyMaterials(result: ReceiveMessageResult): void {
+    // TODO(yuito): エラーハンドリング
+    if (!this.worker) {
+      throw new Error("error");
+    }
+    this.worker.postMessage({
+      type: "remoteSecretKeyMaterials",
+      remoteSecretKeyMaterials: result.remoteSecretKeyMaterials,
+    });
+  }
+
+  workerPostSelfSecretKeyMaterial(
+    selfConnectionId: string,
+    selfKeyId: number,
+    selfSecretKeyMaterial: Uint8Array,
+    waitingTime: number
+  ): void {
+    // TODO(yuito): エラーハンドリング
+    if (!this.worker) {
+      throw new Error("error");
+    }
+    this.worker.postMessage({
+      type: "selfSecretKeyMaterial",
+      selfConnectionId: selfConnectionId,
+      selfKeyId: selfKeyId,
+      selfSecretKeyMaterial: selfSecretKeyMaterial,
+      waitingTime: waitingTime,
+    });
+  }
+
+  startSession(connectionId: string, preKeyBundle: PreKeyBundle): StartSessionResult {
+    const [result, err] = window.e2ee.startSession(
+      connectionId,
+      preKeyBundle.identityKey,
+      preKeyBundle.signedPreKey,
+      preKeyBundle.preKeySignature
+    );
+    if (err) {
+      throw err;
+    }
+    return result;
+  }
+
+  stopSession(connectionId: string): StopSessionResult {
+    const [result, err] = window.e2ee.stopSession(connectionId);
+    if (err) {
+      throw err;
+    }
+    return result;
+  }
+
+  receiveMessage(message: Uint8Array): ReceiveMessageResult {
+    const [result, err] = window.e2ee.receiveMessage(message);
+    if (err) {
+      throw err;
+    }
+    return result;
+  }
+
+  start(selfConnectionId: string): StartResult {
+    const [result, err] = window.e2ee.start(selfConnectionId);
+    if (err) {
+      throw err;
+    }
+    return result;
+  }
+
+  addPreKeyBundle(connectionId: string, preKeyBundle: PreKeyBundle): void {
+    const err = window.e2ee.addPreKeyBundle(
+      connectionId,
+      preKeyBundle.identityKey,
+      preKeyBundle.signedPreKey,
+      preKeyBundle.preKeySignature
+    );
+    if (err) {
+      throw err;
+    }
+  }
+
+  selfFingerprint(): string {
+    return window.e2ee.selfFingerprint();
+  }
+
+  remoteFingerprints(): Record<string, string> {
+    return window.e2ee.remoteFingerprints();
   }
 
   static version(): string {
