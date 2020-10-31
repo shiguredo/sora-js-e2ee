@@ -61,7 +61,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 
 - Chrome M8６ 以降
 - Edge 8６ 以降
-- Insertable Streams API が Chrome M83-87 で Origin Trial 中
+- Insertable Streams API が Chrome M83-88 で Origin Trial 中
     - [Origin Trials](https://developers.chrome.com/origintrials/#/view_trial/731834939447705601)
 
 ## 利用技術
@@ -74,7 +74,7 @@ WebRTC SFU Sora 利用時に E2EE をブラウザで実現するためのライ�
 - Web Worker
     - [Web Workers](https://w3c.github.io/workers/)
 - WebAssembly
-    - [WebAssembly \| MDN](https://developer.mozilla.org/ja/docs/WebAssembly)
+    - [WebAssembly](https://webassembly.org/)
 - The X3DH Key Agreement Protocol
     - [Signal >> Specifications >> The X3DH Key Agreement Protocol](https://signal.org/docs/specifications/x3dh/)
 - The Double Ratchet Algorithm
