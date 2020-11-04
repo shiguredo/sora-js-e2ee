@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./e2ee.ts"/>
-//
+
 type RemoteSecretKeyMaterial = {
   keyId: number;
   secretKeyMaterial: Uint8Array;
@@ -69,8 +70,6 @@ const Nn = 12;
 const Nk = 16;
 // key サイズ（bit）
 const keyLength = Nk * 8;
-// selfDeriveKey 更新時刻
-const selfDeriveKeyUpdatedTime = 0;
 
 async function generateDeriveKey(material: CryptoKey): Promise<CryptoKey> {
   const salt = textEncoder.encode("SFrame10");
@@ -96,6 +95,7 @@ async function generateDeriveKey(material: CryptoKey): Promise<CryptoKey> {
 async function generateWriteIV(material: CryptoKey): Promise<Uint8Array> {
   const salt = textEncoder.encode("SFrame10");
   const info = textEncoder.encode("salt");
+
   const writeIVBuffer = await crypto.subtle.deriveBits(
     {
       name: "HKDF",
@@ -113,7 +113,7 @@ async function generateWriteIV(material: CryptoKey): Promise<Uint8Array> {
 
 let removalTimeoutId = 0;
 
-onmessage = (event) => {
+onmessage = (event): void => {
   const { type } = event.data;
   if (type === "selfSecretKeyMaterial") {
     const { selfSecretKeyMaterial, selfConnectionId, selfKeyId, waitingTime } = event.data;
@@ -148,17 +148,12 @@ onmessage = (event) => {
       }
     } else {
       // 動作済みタイマーなし
-      if (waitingTime) {
-        // connection.destroyed
-        removalTimeoutId = setTimeout(() => {
-          removeOldRemoteDeriveKeys();
-          clearTimeout(removalTimeoutId);
-          removalTimeoutId = 0;
-        }, removalWaitingTime);
-      } else {
-        // connection.created
+      // connection.created の場合も少し実行を遅らせる
+      removalTimeoutId = setTimeout(() => {
         removeOldRemoteDeriveKeys();
-      }
+        clearTimeout(removalTimeoutId);
+        removalTimeoutId = 0;
+      }, removalWaitingTime);
     }
   } else if (type === "remoteSecretKeyMaterials") {
     const { remoteSecretKeyMaterials } = event.data;
@@ -180,6 +175,9 @@ onmessage = (event) => {
           setLatestRemoteKeyId(connectionId, keyId);
         });
     }
+  } else if (type === "removeRemoteDeriveKey") {
+    const { connectionId } = event.data;
+    removeDeriveKey(connectionId);
   } else if (type === "encrypt") {
     const { readableStream, writableStream } = event.data;
     const transformStream = new TransformStream({

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./sframe.ts"/>
-//
+
 type UnencryptedBytes = {
   key: 10;
   delta: 3;
@@ -90,6 +91,11 @@ function removeOldRemoteDeriveKeys(): void {
       });
     }
   });
+}
+
+function removeDeriveKey(connectionId: string): void {
+  latestRemoteKeyIdMap.delete(connectionId);
+  remoteDeriveKeyMap.delete(connectionId);
 }
 
 function getLatestSelfDeriveKey() {
@@ -297,16 +303,9 @@ async function decryptFunction(encodedFrame: Chunk, controller: TransformStreamD
         newUint8.set(new Uint8Array(plainText), unencryptedBytes[encodedFrame.type]);
         encodedFrame.data = newData;
         controller.enqueue(encodedFrame);
-      })
-      .catch((e) => {
-        console.error(e);
-        // console.warn("silenceFrame");
-        controller.enqueue(silenceFrame(encodedFrame));
       });
   } catch (e) {
     // 想定外のパケットフォーマットを受信した場合
-    // console.warn(e);
-    // console.warn("silenceFrame");
     controller.enqueue(silenceFrame(encodedFrame));
   }
 }
