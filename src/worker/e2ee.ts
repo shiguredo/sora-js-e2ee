@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/triple-slash-reference */
+/* eslint-disable @typescript-eslint/triple-slash-reference, @typescript-eslint/no-unused-vars */
 /// <reference path="./sframe.ts"/>
 
 type UnencryptedBytes = {
@@ -98,7 +98,7 @@ function removeDeriveKey(connectionId: string): void {
   remoteDeriveKeyMap.delete(connectionId);
 }
 
-function getLatestSelfDeriveKey() {
+function getLatestSelfDeriveKey(): { connectionId: string; keyId: number; deriveKey: CryptoKey } {
   const deriveKey = selfDeriveKeyMap.get("latest");
   if (!deriveKey) {
     throw new Error("LATEST-SELF-DERIVEKEY-NOT_FOUND");
