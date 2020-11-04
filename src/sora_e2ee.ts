@@ -53,6 +53,7 @@ interface E2EE {
     preKeySignature: string
   ): [StartSessionResult, Error | null];
   stopSession(connectionId: string): [StopSessionResult, Error | null];
+  version(): string;
 }
 
 declare class Go {
@@ -77,7 +78,7 @@ class SoraE2EE {
     // @ts-ignore トライアル段階の API なので無視する
     const supportsInsertableStreams = !!RTCRtpSender.prototype.createEncodedStreams;
     if (!supportsInsertableStreams) {
-      throw new Error("E2EE is not supported in this browser");
+      throw new Error("E2EE is not supported in this browser.");
     }
     this.worker = null;
     this.onWorkerDisconnect = null;
@@ -111,15 +112,13 @@ class SoraE2EE {
   // 初期化処理
   async init(): Promise<PreKeyBundle> {
     if (!window.Go) {
-      // TODO(yuito): 適切なエラーメッセージにする
-      throw new Error(`window.Go is ${window.Go}`);
+      throw new Error(`Failed to load module Go. window.Go is ${window.Go}.`);
     }
     const go = new Go();
     const { instance } = await WebAssembly.instantiateStreaming(fetch("wasm.wasm"), go.importObject);
     go.run(instance);
     if (!window.e2ee) {
-      // TODO(yuito): 適切なエラーメッセージにする
-      throw new Error(`window.e2ee is ${window.e2ee}`);
+      throw new Error(`Failed to load module e2ee. window.e2ee is ${window.e2ee}.`);
     }
     const { preKeyBundle } = await window.e2ee.init();
     return preKeyBundle;
@@ -131,14 +130,15 @@ class SoraE2EE {
     const senderStreams = sender.createEncodedStreams();
     const readableStream = senderStreams.readableStream || senderStreams.readable;
     const writableStream = senderStreams.writableStream || senderStreams.writable;
-    if (this.worker) {
-      const message = {
-        type: "encrypt",
-        readableStream: readableStream,
-        writableStream: writableStream,
-      };
-      this.worker.postMessage(message, [readableStream, writableStream]);
+    if (!this.worker) {
+      throw new Error("Worker is null. Call startWorker in advance.");
     }
+    const message = {
+      type: "encrypt",
+      readableStream: readableStream,
+      writableStream: writableStream,
+    };
+    this.worker.postMessage(message, [readableStream, writableStream]);
   }
 
   setupReceiverTransform(receiver: RTCRtpReceiver): void {
@@ -146,20 +146,20 @@ class SoraE2EE {
     const receiverStreams = receiver.createEncodedStreams();
     const readableStream = receiverStreams.readableStream || receiverStreams.readable;
     const writableStream = receiverStreams.writableStream || receiverStreams.writable;
-    if (this.worker) {
-      const message = {
-        type: "decrypt",
-        readableStream: readableStream,
-        writableStream: writableStream,
-      };
-      this.worker.postMessage(message, [readableStream, writableStream]);
+    if (!this.worker) {
+      throw new Error("Worker is null. Call startWorker in advance.");
     }
+    const message = {
+      type: "decrypt",
+      readableStream: readableStream,
+      writableStream: writableStream,
+    };
+    this.worker.postMessage(message, [readableStream, writableStream]);
   }
 
-  workerPostRemoteSecretKeyMaterials(result: ReceiveMessageResult): void {
-    // TODO(yuito): エラーハンドリング
+  postRemoteSecretKeyMaterials(result: ReceiveMessageResult): void {
     if (!this.worker) {
-      throw new Error("error");
+      throw new Error("Worker is null. Call startWorker in advance.");
     }
     this.worker.postMessage({
       type: "remoteSecretKeyMaterials",
@@ -167,15 +167,14 @@ class SoraE2EE {
     });
   }
 
-  workerPostSelfSecretKeyMaterial(
+  postSelfSecretKeyMaterial(
     selfConnectionId: string,
     selfKeyId: number,
     selfSecretKeyMaterial: Uint8Array,
     waitingTime: number
   ): void {
-    // TODO(yuito): エラーハンドリング
     if (!this.worker) {
-      throw new Error("error");
+      throw new Error("Worker is null. Call startWorker in advance.");
     }
     this.worker.postMessage({
       type: "selfSecretKeyMaterial",
@@ -246,6 +245,10 @@ class SoraE2EE {
   static version(): string {
     // @ts-ignore
     return SORA_E2EE_VERSION;
+  }
+
+  static wasmVersion(): string {
+    return window.e2ee.version();
   }
 }
 
