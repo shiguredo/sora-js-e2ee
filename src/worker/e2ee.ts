@@ -50,7 +50,7 @@ function setCount(connectionId: string, count: number): Map<string, number> {
 
 function getRemoteDeriveKey(connectionId: string, keyId: number): CryptoKey | undefined {
   if (!remoteDeriveKeyMap.has(connectionId)) {
-    throw "REMOTE-DERIVEKEY-MAP-NOT-FOUND";
+    throw new Error("REMOTE-DERIVEKEY-MAP-NOT-FOUND");
   }
 
   const deriveKeyMap = remoteDeriveKeyMap.get(connectionId);
@@ -268,12 +268,11 @@ async function decryptFunction(encodedFrame: Chunk, controller: TransformStreamD
     const [s, count, keyId] = parseSFrameHeader(sframeHeaderBuffer);
     // 今回は s flag は 0 のみ
     if (s !== 0) {
-      throw "UNEXPECTED-S-FLAG";
+      throw new Error("UNEXPECTED-S-FLAG");
     }
 
     const deriveKey = getRemoteDeriveKey(connectionId, keyId);
     if (!deriveKey) {
-      console.info("DERIVEKEY-NOT-FOUND");
       console.warn("DERIVEKEY-NOT-FOUND: ", connectionId, keyId);
       return;
     }

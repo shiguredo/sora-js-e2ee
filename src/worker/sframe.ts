@@ -44,7 +44,7 @@ function encodeSFrameHeader(s: number, count: number, keyId: number): Uint8Array
   // TODO: keyId (KID) が Number.MAX_SAFE_INTEGER, 7 byte を超えていた場合はエラーか例外
   // TODO: count (CTR) が Number.MAX_SAFE_INTEGER, 7 byte を超えていた場合はエラーか例外
   if (maxKeyId < keyId || maxCount < count) {
-    throw "EXCEEDED-MAXIMUM-BROADCASTING-TIME";
+    throw new Error("EXCEEDED-MAXIMUM-BROADCASTING-TIME");
   }
 
   const klen = byteCount(keyId);
@@ -82,7 +82,7 @@ function splitHeader(sframe: ArrayBuffer): [ArrayBuffer, ArrayBuffer, ArrayBuffe
   const sframeHeader = sframe.slice(0, sframeHeaderLength);
 
   if (sframeHeader.byteLength < sframeHeaderLength) {
-    throw "UNEXPECTED-SFRAME-LENGTH";
+    throw new Error("UNEXPECTED-SFRAME-LENGTH");
   }
 
   const connectionId = sframe.slice(sframeHeaderLength, sframeHeaderLength + connectionIdLength);
@@ -103,13 +103,13 @@ function parseSFrameHeader(sframeHeader: ArrayBuffer): [number, number, number] 
 
   // x flag
   if (x !== 1) {
-    throw "UNEXPECTED-X-FLAG";
+    throw new Error("UNEXPECTED-X-FLAG");
   }
 
   const headerLength = 1 + klen + len;
 
   if (sframeHeaderDataView.byteLength < headerLength) {
-    throw "UNEXPECTED-SFRAME-HEADER-LENGTH";
+    throw new Error("UNEXPECTED-SFRAME-HEADER-LENGTH");
   }
 
   const keyIdBuffer = sframeHeader.slice(1, 1 + klen);
