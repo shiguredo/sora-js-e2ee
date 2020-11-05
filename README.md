@@ -4,6 +4,8 @@
 [![npm version](https://badge.fury.io/js/sora-e2ee.svg)](https://badge.fury.io/js/sora-e2ee)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+**このライブラリは Sora JavaScript SDK に統合することになりました**
+
 ## 時雨堂のオープンソースソフトウェアについて
 
 利用前に https://github.com/shiguredo/oss をお読みください。
